@@ -62,7 +62,7 @@ float K_float_value;
 
 void setup() {
     // put your setup code here, to run once:
-    Serial.begin(4800);
+    Serial.begin(115200);
 
     MySerial.begin(4800, SERIAL_8N1, 23, 22);
     
@@ -87,12 +87,10 @@ void setup() {
 
     //logo_show();
 
-    
     MySerial.write(test_command,8);
     delay(1000);
     MySerial.write(test_command,8);
     delay(1000);
-    
       
 }
 
@@ -105,7 +103,17 @@ void loop() {
     int i = 0;
     while (MySerial.available() > 0 )
     {
-        test_response[i] = MySerial.read();
+        Serial.print("Read #"+String(i)+" == ");
+        if (i<19)
+        {
+          test_response[i] = MySerial.read();
+          Serial.println(String(test_response[i])+" (a)");
+        }
+        else
+        {
+          unsigned char tmp=MySerial.read();
+          Serial.println(String(tmp)+ "(b)");
+        }
         i++;
         yield();
     }
@@ -113,7 +121,6 @@ void loop() {
       {Serial.print((int)test_response[j]);
       Serial.print("  ");}
     Serial.print("\n");
-
     moisture = CaculateValue((int)test_response[3],(int)test_response[4]);
     moisture_value = moisture*0.1 ;
     tem = CaculateValue((int)test_response[5],(int)test_response[6]);
@@ -121,10 +128,9 @@ void loop() {
     ph = CaculateValue((int)test_response[9],(int)test_response[10]);
     ph_value = ph*0.1;
 
-    Serial.println(moisture);
-    Serial.println(moisture_value);
-    Serial.println(tem_value);
-    Serial.println(ph_value);
+    Serial.println("M= "+String(moisture_value)+" %");
+    Serial.println("T= "+String(tem_value)+" °C");
+    Serial.println("P= "+String(ph_value)+" ");
     value_show(moisture_value, tem_value, ph_value);
 
     //****************GET Nitrogen, Phosphorus and Potassium
